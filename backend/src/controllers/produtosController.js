@@ -28,6 +28,43 @@ const buscarProdId = async (req, res) => {
     }
 };
 
+const buscarEstoqueMin = async (req, res) => {
+    try {
+        const produto = await listaProduto.buscarTodos();
+        const produtoMin = produto.filter(p => p.quantidade <=10 && p.quantidade >=1);
+
+        if (produtoMin.length) {
+            return res.json(produtoMin);
+        } else {
+            return res.status(404).json({
+                mensagem: "Não tem nenhum produto com quantidade mínima!"
+            });
+        }
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ mensagem: "Erro ao buscar produtos!" });
+    }
+};
+
+const buscarProdSemEstoque = async (req, res) => {
+    try {
+        const produto = await listaProduto.buscarTodos();
+        const semProduto = produto.filter(p => p.quantidade === 0);
+
+        if (semProduto.length) {
+            return res.json(semProduto);
+        } else {
+            return res.status(404).json({
+                mensagem: "Não tem produto zerado no estoque!"
+            });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ mensagem: "Erro ao buscar produtos!" });
+    }
+};
+
 const criarProduto = async (req, res) => {
     try {
         const { nome, valor, quantidade, idCategoria } = req.body;
@@ -85,6 +122,8 @@ const deletarProduto = async (req, res) => {
 module.exports = {
     listarProdutos,
     buscarProdId,
+    buscarEstoqueMin,
+    buscarProdSemEstoque,
     criarProduto,
     editarProduto,
     deletarProduto
